@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ParkType">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="parkTypeSearchVO" type="egovframework.example.parkType.service.ParkTypeDefaultVO"/>
+
+	<resultMap id="parkType" class="egovframework.example.parkType.service.ParkTypeVO">
+
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="registeredId" column="registered_id"/>
+		<result property="updatedId" column="updated_id"/>
+		<result property="registeredAt" column="registered_at"/>
+		<result property="updatedAt" column="updated_at"/>
+
+	</resultMap>
+
+	<insert id="parkTypeDAO.insertParkType">
+		<![CDATA[
+			INSERT INTO park_type 
+				( 
+					code
+					,name
+					,registered_id
+					,updated_id
+					,registered_at
+					,updated_at
+				)
+			VALUES (
+
+					#code#
+					,#name#
+					,#registeredId#
+					,#updatedId#
+					,now()
+					,now()
+			)
+		]]>
+	</insert>
+	
+	<update id="parkTypeDAO.updateParkType">
+		<![CDATA[
+			UPDATE park_type
+			SET 
+				code=#code#
+				,name=#name#
+				,registered_id=#registeredId#
+				,updated_id=#updatedId#
+				,updated_at=now()
+			WHERE code=#code#
+		]]>
+	</update>
+	
+	<delete id="parkTypeDAO.deleteParkType">
+		<![CDATA[
+			DELETE FROM park_type 
+			WHERE code=#code#
+		]]>
+	</delete>
+    
+    <select id="parkTypeDAO.selectParkType" resultMap="parkType">
+        <![CDATA[
+            SELECT
+				code
+				,name
+				,registered_id
+				,updated_id
+				,registered_at
+				,updated_at
+            FROM park_type 
+            WHERE code=#code#
+        ]]>
+    </select>
+	
+	<select id="parkTypeDAO.selectParkTypeList" parameterClass="parkTypeSearchVO" resultClass="egovMap">
+
+			SELECT
+				code
+				,name
+				,registered_id
+				,updated_id
+				,registered_at
+				,updated_at
+			FROM park_type
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				code LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+			ORDER BY code DESC
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#		
+	</select>
+	
+	<select id="parkTypeDAO.selectParkTypeListTotCnt" parameterClass="parkTypeSearchVO" resultClass="int">
+
+			SELECT COUNT(*) totcnt
+			FROM park_type
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				code LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+	</select>
+
+</sqlMap>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Park">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="parkSearchVO" type="egovframework.example.park.service.ParkDefaultVO"/>
+
+	<resultMap id="park" class="egovframework.example.park.service.ParkVO">
+
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="parkTypeCode" column="park_type_code"/>
+		<result property="addressRoad" column="address_road"/>
+		<result property="addressJibun" column="address_jibun"/>
+		<result property="latitude" column="latitude"/>
+		<result property="longitude" column="longitude"/>
+		<result property="area" column="area"/>
+		<result property="registeredId" column="registered_id"/>
+		<result property="updatedId" column="updated_id"/>
+		<result property="registeredAt" column="registered_at"/>
+		<result property="updatedAt" column="updated_at"/>
+
+	</resultMap>
+
+	<insert id="parkDAO.insertPark">
+		<![CDATA[
+			INSERT INTO PARK 
+				( 
+					code
+					,name
+					,park_type_code
+					,address_road
+					,address_jibun
+					,latitude
+					,longitude
+					,area
+					,registered_id
+					,updated_id
+					,registered_at
+					,updated_at
+				)
+			VALUES (
+
+					#code#
+					,#name#
+					,#parkTypeCode#
+					,#addressRoad#
+					,#addressJibun#
+					,#latitude#
+					,#longitude#
+					,#area#
+					,#registeredId#
+					,#updatedId#
+					,now()
+					,now()
+			)
+		]]>
+	</insert>
+	
+	<update id="parkDAO.updatePark">
+		<![CDATA[
+			UPDATE PARK
+			SET 
+				code=#code#
+				,name=#name#
+				,park_type_code=#parkTypeCode#
+				,address_road=#addressRoad#
+				,address_jibun=#addressJibun#
+				,latitude=#latitude#
+				,longitude=#longitude#
+				,area=#area#
+				,registered_id=#registeredId#
+				,updated_id=#updatedId#
+				,updated_at=now()
+			WHERE id=#id#
+		]]>
+	</update>
+	
+	<delete id="parkDAO.deletePark">
+		<![CDATA[
+			DELETE FROM PARK 
+			WHERE id=#id#
+		]]>
+	</delete>
+    
+    <select id="parkDAO.selectPark" resultMap="park">
+        <![CDATA[
+            SELECT
+				id
+				,code
+				,name
+				,park_type_code
+				,address_road
+				,address_jibun
+				,latitude
+				,longitude
+				,area
+				,registered_id
+				,updated_id
+				,registered_at
+				,updated_at
+            FROM PARK 
+            WHERE id=#id#
+        ]]>
+    </select>
+	
+	<select id="parkDAO.selectParkList" parameterClass="parkSearchVO" resultClass="egovMap">
+
+			SELECT
+				id
+				,code
+				,name
+				,park_type_code
+				,address_road
+				,address_jibun
+				,latitude
+				,longitude
+				,area
+				,registered_id
+				,updated_id
+				,registered_at
+				,updated_at
+			FROM PARK
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				code LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+			ORDER BY id DESC
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#		
+	</select>
+	
+	<select id="parkDAO.selectParkListTotCnt" parameterClass="parkSearchVO" resultClass="int">
+
+			SELECT COUNT(*) totcnt
+			FROM PARK
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				code LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE CONCAT('%', #searchKeyword#, '%')
+			</isEqual>
+	</select>
+
+</sqlMap>
